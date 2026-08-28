@@ -1,0 +1,20 @@
+<!DOCTYPE html> 
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>UAM</title>
+    </head>
+    <body>
+       <form action="/calcular" method="post">
+            <label for="txtgrade">Nota:</label>
+            <input type="text" id="txtgrade" name="txtgrade">
+            <button type="submit">Evaluar</button>
+        </form> 
+        {% if answer %}
+        <p>{{ answer }}</p>
+        {% endif %}
+
+    </body>
+
+</html>
