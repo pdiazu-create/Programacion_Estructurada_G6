@@ -1,0 +1,4 @@
+Nombre: Peltier
+Apellido: Diaz Ulloa
+Edad: 17
+Carrera: Ingenieria en Sistemas
