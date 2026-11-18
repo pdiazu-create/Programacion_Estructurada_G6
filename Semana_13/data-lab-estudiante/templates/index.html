@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi DATA LAB</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 p-6">
+  <main class="max-w-3xl mx-auto bg-white rounded-2xl shadow p-6">
+    <h1 class="text-3xl font-bold text-indigo-800">Mi DATA LAB</h1>
+    <p class="my-3">Simulador de estructuras de datos dinámicas</p>
+    <label class="block mt-4">Estructura
+      <select id="tipo" class="border p-2 rounded w-full">
+        <option value="pila">Pila</option>
+        <option value="cola">Cola</option>
+        <option value="lista">Lista enlazada (modelo simplificado)</option>
+        <option value="arbol">Árbol</option>
+        <option value="grafo">Grafo</option>
+      </select>
+    </label>
+    <label class="block mt-3">Valor o nombre del nodo
+      <input id="valor" class="border p-2 rounded w-full" placeholder="Ej.: A">
+    </label>
+    <label class="block mt-3">Otro valor (padre o segundo vértice)
+      <input id="otro" class="border p-2 rounded w-full" placeholder="Opcional">
+    </label>
+    <label class="block mt-3">Operación
+      <select id="accion" class="border p-2 rounded w-full"></select>
+    </label>
+    <button id="ejecutar" class="mt-4 bg-indigo-700 text-white px-5 py-2 rounded">
+      Ejecutar
+    </button>
+    <p id="mensaje" role="status" class="mt-4"></p>
+    <h2 class="text-xl font-bold mt-6">Estado actual</h2>
+    <pre id="salida" class="bg-slate-900 text-green-300 rounded p-4 mt-2 overflow-auto"></pre>
+  </main>
+  <script>
+    const opciones = {
+      pila: ['agregar','extraer','reiniciar'],
+      cola: ['agregar','atender','reiniciar'],
+      lista: ['agregar','eliminar','reiniciar'],
+      arbol: ['agregar','reiniciar'],
+      grafo: ['agregar','conectar','reiniciar']
+    };
+    const tipo = document.querySelector('#tipo');
+    const accion = document.querySelector('#accion');
+    function actualizarOpciones() {
+      accion.innerHTML = '';
+      opciones[tipo.value].forEach(op => {
+        const opt = document.createElement('option');
+        opt.value = op; opt.textContent = op;
+        accion.appendChild(opt);
+      });
+      mostrar();
+    }
+    async function mostrar() {
+      const res = await fetch('/api/estado');
+      const datos = await res.json();
+      document.querySelector('#salida').textContent =
+        JSON.stringify(datos[tipo.value], null, 2);
+    }
+    document.querySelector('#ejecutar').addEventListener('click', async () => {
+      const res = await fetch('/api/operacion', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({tipo: tipo.value, accion: accion.value,
+          valor: document.querySelector('#valor').value,
+          otro: document.querySelector('#otro').value})
+      });
+      const datos = await res.json();
+      const mensaje = document.querySelector('#mensaje');
+      mensaje.textContent = datos.mensaje || datos.error;
+      mensaje.className = res.ok ? 'mt-4 text-green-700' : 'mt-4 text-red-700';
+      if (res.ok) mostrar();
+    });
+    tipo.addEventListener('change', actualizarOpciones);
+    actualizarOpciones();
+  </script>
+</body>
+</html>

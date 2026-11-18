@@ -1,0 +1,1 @@
+{'estudiante': 'juanito', 'sexo': 'hombre', 'nota': 80}
